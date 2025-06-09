@@ -47,6 +47,13 @@ def index():
         name = 'alumno'
         return render_template("index.html", name=name)
 
+@app.route("/allusers")
+def list_users():
+    user_instance = UserF()
+    result = user_instance.get_all()
+    users = result[0] if isinstance(result, tuple) else []
+    return render_template("users.html", users=users)
+
 @app.route("/tasks")
 def list_tasks():
     status = request.args.get('status')
