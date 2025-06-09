@@ -55,11 +55,45 @@
         .clear-filter:hover {
             text-decoration: underline;
         }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #bd2130;
+        }
     </style>
+    <script>
+        function deleteTask(taskId) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+                fetch(`/api/tasks/${taskId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo eliminar la tarea'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar la tarea');
+                });
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="nav-links">
         <a href="/">Inicio</a>
+        <a href="/allusers">Ver Todos los Usuarios</a>
         <a href="/tasks">Todas las Tareas</a>
         <a href="/user_tasks">Tareas por Usuario</a>
     </div>
@@ -91,6 +125,7 @@
                     <th>Descripción</th>
                     <th>ID Usuario</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -100,7 +135,20 @@
                     <td>{{ task.title }}</td>
                     <td>{{ task.description }}</td>
                     <td>{{ task.user_id }}</td>
-                    <td>{{ task.status }}</td>
+                    <td>
+                        {% if task.status == 'pending' %}
+                            Pendiente
+                        {% elif task.status == 'in_progress' %}
+                            En Progreso
+                        {% elif task.status == 'completed' %}
+                            Completado
+                        {% else %}
+                            {{ task.status }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button onclick="deleteTask({{ task.id }})" class="delete-btn">Eliminar</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
