@@ -44,7 +44,7 @@ def index():
     if request.method == "POST":
         return "<h1>POST hello world</h1>"
     else:
-        name = 'Daniel'
+        name = 'alumno'
         return render_template("index.html", name=name)
 
 @app.route("/tasks")
